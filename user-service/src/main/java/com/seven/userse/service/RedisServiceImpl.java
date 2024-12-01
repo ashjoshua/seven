@@ -2,6 +2,8 @@ package com.seven.userse.service;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class RedisServiceImpl implements RedisService {
@@ -13,12 +15,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void saveUserContact(String key, String value, long ttl) {
-        redisTemplate.opsForValue().set(key, value, ttl, TimeUnit.SECONDS);
+    public void saveUserContact(String key, Map<String, String> contactInfo, long ttl) {
+        redisTemplate.opsForValue().set(key, contactInfo, ttl, TimeUnit.SECONDS);
     }
-
-   /* @Override
-    public String getOtpFromRedis(String key) {
-        return (String) redisTemplate.opsForValue().get(key);
-    } */
 }

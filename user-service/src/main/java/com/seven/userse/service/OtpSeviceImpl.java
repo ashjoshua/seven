@@ -49,6 +49,7 @@ public class OtpServiceImpl implements OtpService {
         System.out.println("Sending email to " + email + " with OTP: " + otp);
     }
 
+    /*
     @Override
     public boolean validateOtp(OtpValidationRequest otpValidationRequest) {
         // Retrieve OTP from Redis for phone and email
@@ -67,4 +68,6 @@ public class OtpServiceImpl implements OtpService {
         // Validate both phone and email OTPs
         return otpValidationRequest.getPhoneOtp().equals(phoneOtp) && otpValidationRequest.getEmailOtp().equals(emailOtp);
     }
+
+     */
 }
