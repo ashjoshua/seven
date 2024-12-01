@@ -2,6 +2,7 @@ package com.seven.userse.service.impl;
 
 import com.amazonaws.services.rekognition.AmazonRekognition;
 import com.amazonaws.services.rekognition.model.*;
+import com.seven.userse.config.ServiceConfig;
 import com.seven.userse.service.AwsS3Service;
 import org.springframework.stereotype.Service;
 
@@ -9,21 +10,23 @@ import org.springframework.stereotype.Service;
 public class AwsS3ServiceImpl implements AwsS3Service {
 
     private final AmazonRekognition rekognitionClient;
+    private final ServiceConfig serviceConfig;
 
-    public AwsS3ServiceImpl(AmazonRekognition rekognitionClient) {
+    public AwsS3ServiceImpl(AmazonRekognition rekognitionClient, ServiceConfig serviceConfig) {
         this.rekognitionClient = rekognitionClient;
+        this.serviceConfig = serviceConfig;
     }
 
     @Override
     public void validatePhoto(String photoUrl) {
-        DetectModerationLabelsRequest request = new DetectModerationLabelsRequest()
-                .withImage(new Image().withS3Object(new S3Object().withName(photoUrl)))
-                .withMinConfidence(70F);
+        String bucketName = serviceConfig.getS3BucketName();
+        DetectFacesRequest request = new DetectFacesRequest()
+                .withImage(new Image().withS3Object(new S3Object().withBucket(bucketName).withName(photoUrl)))
+                .withAttributes(Attribute.ALL);
 
-        DetectModerationLabelsResult result = rekognitionClient.detectModerationLabels(request);
-
-        if (!result.getModerationLabels().isEmpty()) {
-            throw new IllegalArgumentException("Photo validation failed. Inappropriate content detected.");
+        DetectFacesResult result = rekognitionClient.detectFaces(request);
+        if (result.getFaceDetails().isEmpty() || result.getFaceDetails().size() > 1) {
+            throw new IllegalArgumentException("Photo validation failed for URL: " + photoUrl);
         }
     }
 }
