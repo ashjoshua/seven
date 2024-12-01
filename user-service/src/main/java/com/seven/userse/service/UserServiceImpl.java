@@ -100,6 +100,8 @@ public class UserServiceImpl implements UserService {
         return updatedUser;
     }
 
+    //feedback to have payment type enum
+
     // Utility: Retrieve User by ID
     @Override
     public Optional<User> findUserById(Long userId) {
