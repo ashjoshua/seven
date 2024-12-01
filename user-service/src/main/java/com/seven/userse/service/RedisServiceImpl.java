@@ -1,6 +1,6 @@
-package com.seven.userservice.service.impl;
+package com.seven.userse.service.impl;
 
-import com.seven.userservice.service.RedisService;
+import com.seven.userse.service.RedisService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,5 +31,11 @@ public class RedisServiceImpl implements RedisService {
             userIds.add(userId);
             redisTemplate.opsForValue().set(key, userIds);
         }
+    }
+
+    @Override
+    public void saveUserContact(String key, Map<String, String> contactInfo, long ttl) {
+        redisTemplate.opsForHash().putAll(key, contactInfo);
+        redisTemplate.expire(key, ttl, TimeUnit.SECONDS);
     }
 }

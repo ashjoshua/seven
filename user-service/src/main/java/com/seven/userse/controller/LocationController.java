@@ -1,4 +1,4 @@
-package com.seven.userservice.controller;
+package com.seven.userse.controller;
 
 import com.seven.userservice.service.GeolocationService;
 import org.springframework.http.ResponseEntity;

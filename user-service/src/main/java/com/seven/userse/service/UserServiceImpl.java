@@ -1,31 +1,49 @@
 package com.seven.userservice.service.impl;
 
-import com.seven.userservice.model.User;
-import com.seven.userservice.repository.UserRepository;
-import com.seven.userservice.service.*;
+import com.seven.userservice.request.*;
+import com.seven.userservice.service.UserService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final RedisService redisService;
-    private final AuditService auditService;
-
-    public UserServiceImpl(UserRepository userRepository, RedisService redisService, AuditService auditService) {
-        this.userRepository = userRepository;
-        this.redisService = redisService;
-        this.auditService = auditService;
+    @Override
+    public boolean isLocationValid(String location) {
+        // Implement location validation logic
+        return true;
     }
 
-    @Transactional
     @Override
-    public User registerUser(User user) {
-        User savedUser = userRepository.save(user);
-        redisService.saveUserProfile(savedUser.getId(), savedUser);
-        auditService.logUserRegistration(savedUser.getId(), "User registered", "location-details");
+    public void captureContactInfo(ContactInfoRequest contactInfoRequest) {
+        // Save contact information temporarily (e.g., Redis)
+    }
 
-        return savedUser;
+    @Override
+    public void generateAndSendOtp(ContactInfoRequest contactInfoRequest) {
+        // Generate and send OTP logic
+    }
+
+    @Override
+    public boolean validateOtp(OtpValidationRequest otpValidationRequest) {
+        // OTP validation logic
+        return true;
+    }
+
+    @Override
+    public void saveUserDetails(UserDetailsRequest userDetailsRequest) {
+        // Save user details to DB
+    }
+
+    @Override
+    public void saveAndValidatePhotos(List<MultipartFile> photos) {
+        // Validate and save user photos
+    }
+
+    @Override
+    public void savePaymentDetails(PaymentRequest paymentRequest) {
+        // Save payment details to DB
     }
 }

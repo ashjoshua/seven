@@ -1,25 +1,24 @@
-package com.seven.userse.service;
+package com.seven.userservice.service;
 
-import com.seven.userse.model.User;
-import com.seven.userse.request.*;
+import com.seven.userservice.request.*;
 
-import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface UserService {
 
-    // Stage 1: Validate OTP
-    void validateOtp(String phoneNumber, String otp);
-    void validateEmailOtp(String email, String otp);
+    boolean isLocationValid(String location);
 
-    // Stage 2: Save Personal Details
-    User savePersonalDetails(UserPersonalDetailsRequest request);
+    void captureContactInfo(ContactInfoRequest contactInfoRequest);
 
-    // Stage 3: Save and Validate Photos
-    User saveAndValidatePhotos(UserPhotoRequest request);
+    void generateAndSendOtp(ContactInfoRequest contactInfoRequest);
 
-    // Stage 4: Save Payment Type
-    User savePaymentType(UserPaymentRequest request);
+    boolean validateOtp(OtpValidationRequest otpValidationRequest);
 
-    // Utility: Retrieve User by ID
-    Optional<User> findUserById(Long userId);
+    void saveUserDetails(UserDetailsRequest userDetailsRequest);
+
+    void saveAndValidatePhotos(List<MultipartFile> photos);
+
+    void savePaymentDetails(PaymentRequest paymentRequest);
 }
