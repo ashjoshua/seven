@@ -3,7 +3,6 @@ package com.seven.userse.controller;
 import com.seven.userse.model.User;
 import com.seven.userse.request.UserRegistrationRequest;
 import com.seven.userse.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +12,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }

@@ -3,11 +3,9 @@ package com.seven.userse.service.impl;
 import com.seven.userse.model.User;
 import com.seven.userse.repository.UserRepository;
 import com.seven.userse.request.UserRegistrationRequest;
-import com.seven.userse.service.AwsS3Service;
-import com.seven.userse.service.OtpService;
-import com.seven.userse.service.RedisService;
-import com.seven.userse.service.UserService;
+import com.seven.userse.service.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,21 +17,25 @@ public class UserServiceImpl implements UserService {
     private final RedisService redisService;
     private final OtpService otpService;
     private final AwsS3Service awsS3Service;
+    private final AuditService auditService;
 
     public UserServiceImpl(UserRepository userRepository, RedisService redisService,
-                           OtpService otpService, AwsS3Service awsS3Service) {
+                           OtpService otpService, AwsS3Service awsS3Service,
+                           AuditService auditService) {
         this.userRepository = userRepository;
         this.redisService = redisService;
         this.otpService = otpService;
         this.awsS3Service = awsS3Service;
+        this.auditService = auditService;
     }
 
     @Override
+    @Transactional
     public User registerUser(UserRegistrationRequest request) {
         // Validate OTP
         validateOtp(request.getPhoneNumber(), request.getOtp());
 
-        // Validate photo count
+        // Validate photos
         validatePhotos(request.getPhotoUrls());
 
         // Create and save user
@@ -43,9 +45,15 @@ public class UserServiceImpl implements UserService {
         user.setPaymentType(request.getPaymentType());
         user.setPhotoUrls(request.getPhotoUrls());
 
-        // Save user to cache and DB
-        saveUserToCache(user);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        // Save user location to cache
+        saveUserLocation(savedUser.getId(), request.getLocation());
+
+        // Audit logging
+        auditService.logUserRegistration(savedUser);
+
+        return savedUser;
     }
 
     @Override
@@ -69,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUserToCache(User user) {
-        redisService.saveUser(user);
+    public void saveUserLocation(Long userId, String location) {
+        redisService.saveLocation(userId, location);
     }
 }
