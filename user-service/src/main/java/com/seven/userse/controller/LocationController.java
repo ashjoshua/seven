@@ -23,10 +23,10 @@ public class LocationController {
         double longitude = coordinates.get("longitude");
 
         String country = geolocationService.getCountryFromCoordinates(latitude, longitude);
-        boolean isInIndia = "India".equalsIgnoreCase(country);
+        boolean isAllowed = geolocationService.isCountryAllowed(country);
 
         Map<String, Boolean> response = new HashMap<>();
-        response.put("isInIndia", isInIndia);
+        response.put("isAllowed", isAllowed);
 
         return ResponseEntity.ok(response);
     }
