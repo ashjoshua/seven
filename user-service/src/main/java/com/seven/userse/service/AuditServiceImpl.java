@@ -1,7 +1,8 @@
-package com.seven.userse.service.impl;
+package com.seven.userservice.service.impl;
 
-import com.seven.userse.model.User;
-import com.seven.userse.service.AuditService;
+import com.seven.userservice.model.AuditLog;
+import com.seven.userservice.repository.AuditLogRepository;
+import com.seven.userservice.service.AuditService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -9,13 +10,26 @@ import java.time.LocalDateTime;
 @Service
 public class AuditServiceImpl implements AuditService {
 
-    @Override
-    public void logUserRegistration(User user, String location) {
-        System.out.println("Audit Log: User Registered - ID: " + user.getId() +
-                ", Phone: " + user.getPhoneNumber() +
-                ", Email: " + user.getEmail() +
-                ", Location: " + location +
-                ", Timestamp: " + LocalDateTime.now());
+    private final AuditLogRepository auditLogRepository;
+
+    public AuditServiceImpl(AuditLogRepository auditLogRepository) {
+        this.auditLogRepository = auditLogRepository;
     }
-    // feedback location os what lat n long or s2 cell
+
+    @Override
+    public void logUserRegistration(Long userId, String action, String location) {
+        AuditLog log = new AuditLog();
+        log.setUserId(userId);
+        log.setAction(action);
+
+        // Log location as S2 cell or lat-long
+        if (location.matches("\\d+")) {
+            log.setLocation("S2 Cell ID: " + location);
+        } else {
+            log.setLocation("Coordinates: " + location);
+        }
+
+        log.setTimestamp(LocalDateTime.now());
+        auditLogRepository.save(log);
+    }
 }

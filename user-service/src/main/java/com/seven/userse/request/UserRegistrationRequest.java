@@ -7,6 +7,7 @@ import java.util.List;
 public class UserRegistrationRequest {
 
     @NotBlank
+    @Pattern(regexp = "^[6-9]\\d{9}$", message = "Phone number must be a valid 10-digit Indian mobile number")
     private String phoneNumber;
 
     @Email

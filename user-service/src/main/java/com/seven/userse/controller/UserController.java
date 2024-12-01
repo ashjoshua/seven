@@ -1,13 +1,12 @@
-package com.seven.userse.controller;
+package com.seven.userservice.controller;
 
-import com.seven.userse.model.User;
-import com.seven.userse.request.UserRegistrationRequest;
-import com.seven.userse.service.UserService;
+import com.seven.userservice.request.*;
+import com.seven.userservice.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -16,17 +15,31 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody UserRegistrationRequest request) {
-        User registeredUser = userService.registerUser(request);
-        return ResponseEntity.ok(registeredUser);
+    // Page 1: OTP Generation
+    @PostMapping("/generate-otp")
+    public ResponseEntity<String> generateOtp(@RequestBody OtpRequest request) {
+        userService.generateOtp(request);
+        return ResponseEntity.ok("OTP sent successfully.");
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.findUserById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    // Page 2: Validate Personal Details
+    @PostMapping("/validate-details")
+    public ResponseEntity<String> validateDetails(@RequestBody UserPersonalDetailsRequest request) {
+        userService.savePersonalDetails(request);
+        return ResponseEntity.ok("Details validated and saved successfully.");
     }
-    //feedback - user controller missing otp genm endpoint, validate entered details, validate photos, payment, not supporting mulipage
+
+    // Page 3: Validate Photos
+    @PostMapping("/validate-photos")
+    public ResponseEntity<String> validatePhotos(@RequestBody UserPhotoRequest request) {
+        userService.saveAndValidatePhotos(request);
+        return ResponseEntity.ok("Photos validated and saved successfully.");
+    }
+
+    // Page 4: Handle Payment
+    @PostMapping("/payment")
+    public ResponseEntity<String> handlePayment(@RequestBody UserPaymentRequest request) {
+        userService.savePaymentType(request);
+        return ResponseEntity.ok("Payment type saved successfully.");
+    }
 }

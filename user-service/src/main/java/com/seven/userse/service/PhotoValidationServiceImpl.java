@@ -1,8 +1,8 @@
-package com.seven.userse.service.impl;
+package com.seven.userservice.service.impl;
 
 import com.amazonaws.services.rekognition.AmazonRekognition;
 import com.amazonaws.services.rekognition.model.*;
-import com.seven.userse.service.PhotoValidationService;
+import com.seven.userservice.service.PhotoValidationService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +23,11 @@ public class PhotoValidationServiceImpl implements PhotoValidationService {
                 .withAttributes(Attribute.ALL);
 
         DetectFacesResult result = rekognitionClient.detectFaces(request);
-        List<FaceDetail> faceDetails = result.getFaceDetails();
+        List<FaceDetail> faces = result.getFaceDetails();
 
-        return faceDetails.size() == 1; // feedbac Exactly one human face is required
+        if (faces.size() != 1) {
+            throw new IllegalArgumentException("Photo validation failed: Exactly one human face is required.");
+        }
+        return true;
     }
 }

@@ -1,26 +1,29 @@
-package com.seven.userse.service.impl;
+package com.seven.userservice.service.impl;
 
-import com.google.common.geometry.S2CellId;
-import com.google.common.geometry.S2LatLng;
-import com.seven.userse.service.LocationService;
-import org.springframework.data.redis.core.RedisTemplate;
+import com.seven.userservice.service.LocationService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LocationServiceImpl implements LocationService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, List<Long>> redisTemplate;
 
-    public LocationServiceImpl(RedisTemplate<String, Object> redisTemplate) {
+    public LocationServiceImpl(RedisTemplate<String, List<Long>> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     @Override
-    public void storeUserLocation(Long userId, double latitude, double longitude) {
-        S2LatLng latLng = S2LatLng.fromDegrees(latitude, longitude);
-        S2CellId cellId = S2CellId.fromLatLng(latLng);
-        String key = "s2:" + cellId.id();
-        redisTemplate.opsForList().rightPush(key, userId);
-        // feedback if key ecists what you doing...should have code to use exisitng and epnd..whats tiem complesity here..if we append at end of list
+    public void updateLocation(String s2Cell, Long userId) {
+        String key = "location:" + s2Cell;
+        List<Long> userIds = redisTemplate.opsForValue().get(key);
+
+        if (userIds == null) {
+            userIds = new ArrayList<>();
+        }
+
+        if (!userIds.contains(userId)) {
+            userIds.add(userId);
+            redisTemplate.opsForValue().set(key, userIds);
+        }
     }
 }

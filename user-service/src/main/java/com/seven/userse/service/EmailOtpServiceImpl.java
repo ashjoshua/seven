@@ -1,56 +1,42 @@
-package com.seven.userse.service.impl;
+package com.seven.userservice.service.impl;
 
-import com.seven.userse.service.EmailOtpService;
-import org.springframework.beans.factory.annotation.Value;
+import com.seven.userservice.service.EmailOtpService;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.ses.SesClient;
-import software.amazon.awssdk.services.ses.model.*;
 
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class EmailOtpServiceImpl implements EmailOtpService {
 
-    private final SesClient sesClient;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    @Value("${aws.ses.from-email}")
-    private String fromEmail;
-
-    private final ConcurrentHashMap<String, String> otpCache = new ConcurrentHashMap<>();
-
-    public EmailOtpServiceImpl(SesClient sesClient) {
-        this.sesClient = sesClient;
+    public EmailOtpServiceImpl(RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
-    public String generateOtp(String email) {
-        String otp = String.format("%04d", new Random().nextInt(10000));
-        otpCache.put(email, otp);
-        sendEmailOtp(email, otp);
-        return otp;
-        //feedbACK WHATS THE otp type number or alpha nume..also are you storing it in encrypted form in cache
+    public void generateOtp(String email) {
+        String otp = generateNumericOtp(); // Using numeric OTPs for simplicity
+        String key = "otp:" + email;
+        redisTemplate.opsForValue().set(key, otp, 60, TimeUnit.SECONDS); // Valid for 60 seconds
+
+        sendEmail(email, otp);
+    }
+
+    private String generateNumericOtp() {
+        return String.valueOf((int) (Math.random() * 900000) + 100000); // 6-digit numeric OTP
+    }
+
+    private void sendEmail(String email, String otp) {
+        String subject = "7 Registration OTP";
+        String body = "Your OTP is: " + otp + ". It is valid for 60 seconds.";
+        // Logic to send email (e.g., Amazon SES or SMTP)
     }
 
     @Override
-    public boolean validateOtp(String email, String otp) {
-        return otp.equals(otpCache.get(email));
-    }
-
-    private void sendEmailOtp(String email, String otp) {
-        SendEmailRequest request = SendEmailRequest.builder()
-                .destination(Destination.builder().toAddresses(email).build())
-                .message(Message.builder()
-                        .subject(Content.builder().data("Your OTP").build())
-                        .body(Body.builder().textPart(Content.builder()
-                                .data("Your OTP is: " + otp)
-                                .build()).build())
-                        .build())
-                .source(fromEmail)
-                .build();
-
-        sesClient.sendEmail(request);
-
-        //feedback inluce subject like 7 registration otp.. and include text like otp ,how long its valid..lets keep it valid for 60 secs onlu
+    public boolean validateOtp(String email, String enteredOtp) {
+        String key = "otp:" + email;
+        String cachedOtp = redisTemplate.opsForValue().get(key);
+        return enteredOtp.equals(cachedOtp);
     }
 }

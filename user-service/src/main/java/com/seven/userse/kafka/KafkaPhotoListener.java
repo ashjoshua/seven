@@ -1,31 +1,22 @@
-package com.seven.userse.kafka;
+package com.seven.userservice.listener;
 
-import com.amazonaws.services.rekognition.AmazonRekognition;
-import com.amazonaws.services.rekognition.model.*;
+import com.seven.userservice.service.PhotoValidationService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class KafkaPhotoListener {
 
-    private final AmazonRekognition rekognitionClient;
+    private final PhotoValidationService photoValidationService;
 
-    public KafkaPhotoListener(AmazonRekognition rekognitionClient) {
-        this.rekognitionClient = rekognitionClient;
+    public KafkaPhotoListener(PhotoValidationService photoValidationService) {
+        this.photoValidationService = photoValidationService;
     }
 
-    @KafkaListener(topics = "photo-validation", groupId = "user-service")
-    public void handlePhotoValidation(String photoUrl) {
-        DetectFacesRequest request = new DetectFacesRequest()
-                .withImage(new Image().withS3Object(new S3Object().withName(photoUrl)))
-                .withAttributes(Attribute.ALL);
-
-        DetectFacesResult result = rekognitionClient.detectFaces(request);
-        if (result.getFaceDetails().isEmpty() || result.getFaceDetails().size() > 1) {
-            throw new IllegalArgumentException("Photo validation failed for URL: " + photoUrl);
+    @KafkaListener(topics = "photo-validation-topic", groupId = "photo-validation-group")
+    public void validatePhoto(String photoUrl) {
+        if (!photoValidationService.isValidPhoto(photoUrl)) {
+            throw new IllegalArgumentException("Photo validation failed: Exactly one face is required.");
         }
-        System.out.println("Photo validated successfully for URL: " + photoUrl);
-
-        //feedback there should only be one face ... not more nor less
     }
 }

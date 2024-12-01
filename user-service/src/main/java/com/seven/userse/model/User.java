@@ -1,6 +1,6 @@
-package com.seven.userse.model;
+package com.seven.userservice.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -12,11 +12,17 @@ public class User {
 
     private String phoneNumber;
     private String email;
-    private String paymentType;
+    private String name;
+    private Integer age;
+    private String gender; // Added gender
+    private String orientation;
+    private String pitch;
+    private Integer height; // Stored in cm
 
     @ElementCollection
     private List<String> photoUrls;
 
-    // Getters and Setters
-    //feedback what about the other attributed like gender height text..is it needed here
+    private String paymentType;
+
+    // Getters and setters
 }
