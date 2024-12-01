@@ -1,2 +1,8 @@
 1. git repo - https://github.com/ashjoshua/seven
 2. added modules 
+3. added user regustration to meet fr , nfr -Flow Breakdown:
+Page 1: Validate OTP (phone and email).
+Page 2: Capture name, age, sex, orientation, text (pitch), and height.
+Page 3: Upload and validate photos.
+Page 4: Select payment type (basic or premium).
+
