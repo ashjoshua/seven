@@ -21,5 +21,6 @@ public class LocationServiceImpl implements LocationService {
         S2CellId cellId = S2CellId.fromLatLng(latLng);
         String key = "s2:" + cellId.id();
         redisTemplate.opsForList().rightPush(key, userId);
+        // feedback if key ecists what you doing...should have code to use exisitng and epnd..whats tiem complesity here..if we append at end of list
     }
 }

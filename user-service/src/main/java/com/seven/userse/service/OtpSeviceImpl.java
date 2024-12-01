@@ -28,6 +28,7 @@ public class OtpServiceImpl implements OtpService {
         sendOtp(phoneNumber, otp);
         return otp;
     }
+    //feedback ..keep phone otp cinsistent with email otp
 
     @Override
     public boolean validateOtp(String phoneNumber, String otp) {

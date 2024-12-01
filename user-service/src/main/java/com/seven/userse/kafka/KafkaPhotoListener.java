@@ -25,5 +25,7 @@ public class KafkaPhotoListener {
             throw new IllegalArgumentException("Photo validation failed for URL: " + photoUrl);
         }
         System.out.println("Photo validated successfully for URL: " + photoUrl);
+
+        //feedback there should only be one face ... not more nor less
     }
 }

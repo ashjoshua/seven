@@ -11,4 +11,5 @@ public class KafkaConfig {
     public NewTopic photoValidationTopic() {
         return new NewTopic("photo-validation", 3, (short) 1);
     }
+    //feedback what does 3 stand for
 }

@@ -105,4 +105,5 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findUserById(Long userId) {
         return userRepository.findById(userId);
     }
+    // feedback  where is method to save .regsited user in redis , postgre db , audit db...
 }

@@ -28,5 +28,6 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         if (result.getFaceDetails().isEmpty() || result.getFaceDetails().size() > 1) {
             throw new IllegalArgumentException("Photo validation failed for URL: " + photoUrl);
         }
+        //feedback there should only be one face per ohoto
     }
 }

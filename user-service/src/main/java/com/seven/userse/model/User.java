@@ -18,4 +18,5 @@ public class User {
     private List<String> photoUrls;
 
     // Getters and Setters
+    //feedback what about the other attributed like gender height text..is it needed here
 }

@@ -25,6 +25,7 @@ public class RedisServiceImpl implements RedisService {
     public void saveUserProfile(User user) {
         String key = "user:" + user.getId();
         redisTemplate.opsForValue().set(key, user);
+        // feedback whats stored in redis chase ke us suer id and vaoue is what...
     }
 
     @Override

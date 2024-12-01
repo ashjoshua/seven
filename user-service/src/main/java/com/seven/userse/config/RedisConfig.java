@@ -28,4 +28,5 @@ public class RedisConfig {
     public LettuceConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
+    //feedback are uwe using redis based on profile ..
 }

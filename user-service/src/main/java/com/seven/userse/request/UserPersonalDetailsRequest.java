@@ -9,6 +9,6 @@ public class UserPersonalDetailsRequest {
     private String orientation;
     private String pitch;
     private Integer height;
-
+// feedback - height should be stored in cm but ui could capture it in feet or cm
     // Getters and setters
 }

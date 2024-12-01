@@ -29,6 +29,7 @@ public class EmailOtpServiceImpl implements EmailOtpService {
         otpCache.put(email, otp);
         sendEmailOtp(email, otp);
         return otp;
+        //feedbACK WHATS THE otp type number or alpha nume..also are you storing it in encrypted form in cache
     }
 
     @Override
@@ -49,5 +50,7 @@ public class EmailOtpServiceImpl implements EmailOtpService {
                 .build();
 
         sesClient.sendEmail(request);
+
+        //feedback inluce subject like 7 registration otp.. and include text like otp ,how long its valid..lets keep it valid for 60 secs onlu
     }
 }

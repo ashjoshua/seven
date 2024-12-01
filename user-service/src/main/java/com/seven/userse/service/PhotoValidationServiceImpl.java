@@ -25,6 +25,6 @@ public class PhotoValidationServiceImpl implements PhotoValidationService {
         DetectFacesResult result = rekognitionClient.detectFaces(request);
         List<FaceDetail> faceDetails = result.getFaceDetails();
 
-        return faceDetails.size() == 1; // Exactly one human face is required
+        return faceDetails.size() == 1; // feedbac Exactly one human face is required
     }
 }

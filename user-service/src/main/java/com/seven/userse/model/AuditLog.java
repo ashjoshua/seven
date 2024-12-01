@@ -22,5 +22,7 @@ public class AuditLog {
         this.timestamp = timestamp;
     }
 
+    //location missing in the  audit
+
     // Getters and Setters
 }

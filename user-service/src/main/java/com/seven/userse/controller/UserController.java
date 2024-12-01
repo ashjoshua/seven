@@ -28,4 +28,5 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    //feedback - user controller missing otp genm endpoint, validate entered details, validate photos, payment, not supporting mulipage
 }

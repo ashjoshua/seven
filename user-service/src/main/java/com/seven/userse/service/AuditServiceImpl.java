@@ -17,4 +17,5 @@ public class AuditServiceImpl implements AuditService {
                 ", Location: " + location +
                 ", Timestamp: " + LocalDateTime.now());
     }
+    // feedback location os what lat n long or s2 cell
 }
