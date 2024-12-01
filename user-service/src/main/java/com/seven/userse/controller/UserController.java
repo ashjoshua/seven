@@ -1,20 +1,33 @@
 package com.seven.userse.controller;
 
-import com.seven.userse.model.RegistrationRequest;
+import com.seven.userse.model.User;
+import com.seven.userse.request.UserRegistrationRequest;
 import com.seven.userse.service.UserService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
-@RequiredArgsConstructor
+@RequestMapping("/api/users")
 public class UserController {
+
     private final UserService userService;
 
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegistrationRequest request) {
-        userService.registerUser(request);
-        return ResponseEntity.ok("User registered successfully");
+    public ResponseEntity<User> registerUser(@RequestBody UserRegistrationRequest request) {
+        User registeredUser = userService.registerUser(request);
+        return ResponseEntity.ok(registeredUser);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return userService.findUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
