@@ -47,14 +47,16 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
-        // Save user location to cache
-        saveUserLocation(savedUser.getId(), request.getLocation());
+        // Store user location in Redis
+        locationService.storeUserLocation(savedUser.getId(), request.getLatitude(), request.getLongitude());
 
-        // Audit logging
-        auditService.logUserRegistration(savedUser);
+        // Log audit data
+        auditService.logUserRegistration(savedUser, request.getLatitude() + "," + request.getLongitude());
 
         return savedUser;
     }
+
+
 
     @Override
     public Optional<User> findUserById(Long userId) {
