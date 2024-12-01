@@ -1,24 +1,24 @@
-package com.seven.userservice.service;
+package com.seven.userse.service;
 
-import com.seven.userservice.request.*;
+import com.seven.userse.request.*;
 
+import com.seven.userservice.request.UserPersonalDetailsRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface UserService {
 
-    boolean isLocationValid(String location);
 
-    void captureContactInfo(ContactInfoRequest contactInfoRequest);
 
-    void generateAndSendOtp(ContactInfoRequest contactInfoRequest);
+
+    void generateAndSendOtp(OtpRequest otpRequest);
 
     boolean validateOtp(OtpValidationRequest otpValidationRequest);
 
-    void saveUserDetails(UserDetailsRequest userDetailsRequest);
+    void saveUserDetails(UserPersonalDetailsRequest userDetailsRequest);
 
     void saveAndValidatePhotos(List<MultipartFile> photos);
 
-    void savePaymentDetails(PaymentRequest paymentRequest);
+    //void savePaymentDetails(PaymentRequest paymentRequest);
 }

@@ -1,8 +1,12 @@
-package com.seven.userservice.service.impl;
+package com.seven.userse.service.impl;
 
-import com.seven.userservice.request.*;
-import com.seven.userservice.service.UserService;
+import com.seven.userse.model.User;
+import com.seven.userse.repository.UserRepository;
+import com.seven.userse.request.*;
+import com.seven.userse.service.*;
+import com.seven.userse.request.UserPersonalDetailsRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -10,40 +14,54 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final UserRepository userRepository;
+    private final RedisService redisService;
+    private final AuditService auditService;
+    private final OtpService otpService;
+    private final LocationService locationService;
+
+    public UserServiceImpl(UserRepository userRepository, RedisService redisService, AuditService auditService, OtpService otpService, LocationService locationService) {
+        this.userRepository = userRepository;
+        this.redisService = redisService;
+        this.auditService = auditService;
+        this.otpService = otpService;
+        this.locationService = locationService;
+    }
+
+
     @Override
-    public boolean isLocationValid(String location) {
-        // Implement location validation logic
-        return true;
+    public void generateAndSendOtp(OtpRequest request) {
+       otpService.generateAndSendOtp(request);
+
+
     }
 
     @Override
-    public void captureContactInfo(ContactInfoRequest contactInfoRequest) {
-        // Save contact information temporarily (e.g., Redis)
+    public boolean validateOtp(OtpValidationRequest request) {
+        return otpService.validateOtp(request.getPhone(), request.getPhoneOtp()) &&
+                otpService.validateOtp(request.getEmail(), request.getEmailOtp());
     }
 
+    @Transactional
     @Override
-    public void generateAndSendOtp(ContactInfoRequest contactInfoRequest) {
-        // Generate and send OTP logic
-    }
-
-    @Override
-    public boolean validateOtp(OtpValidationRequest otpValidationRequest) {
-        // OTP validation logic
-        return true;
-    }
-
-    @Override
-    public void saveUserDetails(UserDetailsRequest userDetailsRequest) {
-        // Save user details to DB
+    public void saveUserDetails(UserPersonalDetailsRequest request) {
+        User user = new User();
+        user.setName(request.getName());
+        user.setAge(request.getAge());
+        user.setGender(request.getGender());
+        user.setPreferences(request.getPreferences());
+        userRepository.save(user);
+        redisService.saveUserProfile(user);
+        auditService.logUserRegistration(user.getId(), "User registered", "location-details");
     }
 
     @Override
     public void saveAndValidatePhotos(List<MultipartFile> photos) {
-        // Validate and save user photos
+        // Validate and save photos
     }
 
     @Override
-    public void savePaymentDetails(PaymentRequest paymentRequest) {
-        // Save payment details to DB
+    public void savePaymentDetails(PaymentRequest request) {
+        // Save payment details
     }
 }

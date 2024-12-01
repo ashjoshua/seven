@@ -1,6 +1,6 @@
-package com.seven.userse.service.impl;
+package com.seven.userse.service;
 
-import com.seven.userse.service.RedisService;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,29 +13,12 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void saveUserProfile(Long userId, Object userProfile) {
-        String key = "user:" + userId;
-        redisTemplate.opsForValue().set(key, userProfile);
+    public void saveUserContact(String key, String value, long ttl) {
+        redisTemplate.opsForValue().set(key, value, ttl, TimeUnit.SECONDS);
     }
 
-    @Override
-    public void mapS2CellToUser(String s2Cell, Long userId) {
-        String key = "s2:" + s2Cell;
-        List<Long> userIds = redisTemplate.opsForValue().get(key);
-
-        if (userIds == null) {
-            userIds = new ArrayList<>();
-        }
-
-        if (!userIds.contains(userId)) {
-            userIds.add(userId);
-            redisTemplate.opsForValue().set(key, userIds);
-        }
-    }
-
-    @Override
-    public void saveUserContact(String key, Map<String, String> contactInfo, long ttl) {
-        redisTemplate.opsForHash().putAll(key, contactInfo);
-        redisTemplate.expire(key, ttl, TimeUnit.SECONDS);
-    }
+   /* @Override
+    public String getOtpFromRedis(String key) {
+        return (String) redisTemplate.opsForValue().get(key);
+    } */
 }

@@ -1,4 +1,4 @@
-package com.seven.userservice.request;
+package com.seven.userse.request;
 
 public class OtpValidationRequest {
     private String phone;

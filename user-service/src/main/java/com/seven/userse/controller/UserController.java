@@ -1,7 +1,7 @@
-package com.seven.userservice.controller;
+package com.seven.userse.controller;
 
-import com.seven.userservice.request.*;
-import com.seven.userservice.service.UserService;
+import com.seven.userse.request.*;
+import com.seven.userse.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,21 +18,11 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/validate-location")
-    public ResponseEntity<?> validateLocation(@RequestBody LocationRequest locationRequest) {
-        boolean isValid = userService.isLocationValid(locationRequest.getLocation());
-        return isValid ? ResponseEntity.ok("Location is valid.") : ResponseEntity.badRequest().body("Location not supported.");
-    }
 
-    @PostMapping("/capture-contact-info")
-    public ResponseEntity<?> captureContactInfo(@RequestBody ContactInfoRequest contactInfoRequest) {
-        userService.captureContactInfo(contactInfoRequest);
-        return ResponseEntity.ok("Contact information captured.");
-    }
 
     @PostMapping("/send-otp")
-    public ResponseEntity<?> sendOtp(@RequestBody ContactInfoRequest contactInfoRequest) {
-        userService.generateAndSendOtp(contactInfoRequest);
+    public ResponseEntity<?> sendOtp(@RequestBody OtpRequest otpRequest) {
+        userService.generateAndSendOtp(otpRequest);
         return ResponseEntity.ok("OTP sent to phone and email.");
     }
 
@@ -43,8 +33,8 @@ public class UserController {
     }
 
     @PostMapping("/capture-user-details")
-    public ResponseEntity<?> captureUserDetails(@RequestBody UserDetailsRequest userDetailsRequest) {
-        userService.saveUserDetails(userDetailsRequest);
+    public ResponseEntity<?> captureUserDetails(@RequestBody com.seven.userservice.request.UserPersonalDetailsRequest userPersonalDetailsRequest) {
+        userService.saveUserDetails(userPersonalDetailsRequest);
         return ResponseEntity.ok("User details captured.");
     }
 
@@ -54,9 +44,11 @@ public class UserController {
         return ResponseEntity.ok("Photos uploaded successfully.");
     }
 
-    @PostMapping("/capture-payment")
+   /* @PostMapping("/capture-payment")
     public ResponseEntity<?> capturePayment(@RequestBody PaymentRequest paymentRequest) {
         userService.savePaymentDetails(paymentRequest);
         return ResponseEntity.ok("Payment details captured.");
     }
+    */
+
 }
