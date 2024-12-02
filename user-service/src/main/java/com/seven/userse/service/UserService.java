@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface UserService {
 
+    void sendLoginOtp(String phoneNumber);
+
+    String loginWithPhoneNumber(String phoneNumber, String otp);
 
     String validateOtpAndGenerateSession(OtpValidationRequest otpValidationRequest);
 
@@ -18,7 +21,5 @@ public interface UserService {
 
     void captureUserDetails(String sessionToken, UserPersonalDetailsRequest userDetailsRequest);
 
-    void saveAndValidatePhotos(List<MultipartFile> photos);
 
-    //void savePaymentDetails(PaymentRequest paymentRequest);
 }

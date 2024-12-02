@@ -22,6 +22,27 @@ public class UserController {
     }
 
 
+    @PostMapping("/send-login-otp")
+    public ResponseEntity<?> sendLoginOtp(@RequestBody PhoneLoginRequest phoneLoginRequest) {
+        try {
+            userService.sendLoginOtp(phoneLoginRequest.getPhoneNumber());
+            return ResponseEntity.ok("OTP sent to phone number.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to send OTP: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginWithPhoneNumber(@RequestParam String phoneNumber, @RequestParam String otp) {
+        try {
+            String jwtToken = userService.loginWithPhoneNumber(phoneNumber, otp);
+            return ResponseEntity.ok(Map.of("token", jwtToken));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+
 
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody OtpRequest otpRequest) {

@@ -34,6 +34,26 @@ public class OtpServiceImpl implements OtpService {
 
 
     @Override
+    public void generateAndSendOtpForPhone(String phoneNumber) {
+        String phoneOtp = generateNumericOtp();
+
+        // Save OTP in Redis with 5-minute TTL
+        String redisKey = String.format("otp:%s", phoneNumber);
+        redisService.saveUserContact(redisKey, phoneOtp, TimeUnit.MINUTES.toSeconds(5));
+        logger.info("Generated OTP for phone: {}", phoneNumber);
+
+        // Publish the OTP to Kafka for potential notification services
+        try {
+            Map<String, String> payload = Map.of("phone", phoneNumber, "otp", phoneOtp);
+            kafkaTemplate.send(otpTopic, phoneNumber, new ObjectMapper().writeValueAsString(payload));
+            logger.info("Published OTP to Kafka for phone: {}", phoneNumber);
+        } catch (Exception e) {
+            logger.error("Failed to publish OTP to Kafka for phone: {}", phoneNumber, e);
+        }
+    }
+
+
+    @Override
     public void generateAndSendOtp(OtpRequest otpRequest) {
         // Generate OTP for phone and email
         String phoneOtp = generateNumericOtp();

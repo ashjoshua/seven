@@ -4,6 +4,7 @@ public class UserPersonalDetailsRequest {
 
     private String phoneNumber;
     private String email;
+    private String subscriptionType;
 
     public String getGender() {
         return gender;
@@ -85,6 +86,12 @@ public class UserPersonalDetailsRequest {
         }
         return Integer.parseInt(height.replaceAll("\\D+", "").trim());
     }
+    public String getSubscriptionType() {
+        return subscriptionType;
+    }
 
+    public void setSubscriptionType(String subscriptionType) {
+        this.subscriptionType = subscriptionType;
+    }
     // Getters and setters
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seven.userse.request.OtpValidationRequest;
 import com.seven.userse.request.UserPersonalDetailsRequest;
+import com.seven.userse.util.JwtUtils;
 import com.seven.userse.util.RetryUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -33,17 +34,17 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RedisService redisService;
-    private final AuditService auditService;
+
     private final OtpService otpService;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final LocationService locationService;
     @Value("${kafka.topic.name:user-topic}")
     private String userTopic;
 
-    public UserServiceImpl(KafkaTemplate<String, String> kafkaTemplate, UserRepository userRepository, RedisService redisService, AuditService auditService, OtpService otpService, LocationService locationService) {
+    public UserServiceImpl(KafkaTemplate<String, String> kafkaTemplate, UserRepository userRepository, RedisService redisService, OtpService otpService, LocationService locationService) {
         this.userRepository = userRepository;
         this.redisService = redisService;
-        this.auditService = auditService;
+
         this.otpService = otpService;
         this.locationService = locationService;
         this.kafkaTemplate = kafkaTemplate;
@@ -55,6 +56,10 @@ public class UserServiceImpl implements UserService {
        otpService.generateAndSendOtp(request);
 
 
+    }
+    @Override
+    public void sendLoginOtp(String phoneNumber) {
+        otpService.generateAndSendOtpForPhone(phoneNumber);
     }
 
     @Override
@@ -86,6 +91,26 @@ public class UserServiceImpl implements UserService {
         String storedToken = redisService.getOtpFromRedis(sessionKey);
         return sessionToken.equals(storedToken);
     }
+
+    @Override
+    public String loginWithPhoneNumber(String phoneNumber, String otp) {
+        String redisKey = String.format("otp:%s", phoneNumber);
+        String cachedOtp = redisService.getOtpFromRedis(redisKey);
+
+        if (cachedOtp == null || !cachedOtp.equals(otp)) {
+            throw new IllegalArgumentException("Invalid or expired OTP.");
+        }
+
+        // Remove OTP from Redis (if required)
+        redisService.delete(redisKey);
+
+        // Generate JWT
+        return JwtUtils.generateToken(phoneNumber);
+    }
+
+
+
+
 
     @Override
     public void captureUserDetails(String sessionToken, UserPersonalDetailsRequest userDetailsRequest) {
@@ -124,13 +149,5 @@ public class UserServiceImpl implements UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(request);
     }
-    @Override
-    public void saveAndValidatePhotos(List<MultipartFile> photos) {
-        // Validate and save photos
-    }
 
-   // @Override
-    //public void savePaymentDetails(PaymentRequest request) {
-        // Save payment details
-    //}
 }
