@@ -1,4 +1,4 @@
-package com.seven.userservice.exception;
+package com.seven.userse.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
