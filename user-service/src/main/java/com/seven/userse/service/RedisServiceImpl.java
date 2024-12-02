@@ -19,4 +19,12 @@ public class RedisServiceImpl implements RedisService {
     public void saveUserContact(String key, String value, long ttl) {
         redisTemplate.opsForValue().set(key, value, ttl, TimeUnit.SECONDS);
     }
+    @Override
+    public String getOtpFromRedis(String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
+    @Override
+    public void delete(String key) {
+        redisTemplate.delete(key);
+    }
 }

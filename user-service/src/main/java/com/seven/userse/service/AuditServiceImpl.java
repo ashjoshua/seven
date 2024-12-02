@@ -1,8 +1,8 @@
-package com.seven.userservice.service.impl;
+package com.seven.userse.service.impl;
 
-import com.seven.userservice.model.AuditLog;
-import com.seven.userservice.repository.AuditLogRepository;
-import com.seven.userservice.service.AuditService;
+import com.seven.userse.model.AuditLog;
+import com.seven.userse.repository.AuditLogRepository;
+import com.seven.userse.service.AuditService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

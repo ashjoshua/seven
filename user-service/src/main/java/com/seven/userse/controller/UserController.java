@@ -2,11 +2,14 @@ package com.seven.userse.controller;
 
 import com.seven.userse.request.*;
 import com.seven.userse.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Map;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/user")
@@ -22,21 +25,43 @@ public class UserController {
 
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody OtpRequest otpRequest) {
-        userService.generateAndSendOtp(otpRequest);
-        return ResponseEntity.ok("OTP sent to phone and email.");
+        try {
+            userService.generateAndSendOtp(otpRequest);
+            return ResponseEntity.ok("OTP sent to phone and email.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to send OTP: " + e.getMessage());
+        }
     }
+
 
     @PostMapping("/validate-otp")
     public ResponseEntity<?> validateOtp(@RequestBody OtpValidationRequest otpValidationRequest) {
-        boolean isValid = userService.validateOtp(otpValidationRequest);
-        return isValid ? ResponseEntity.ok("OTP validated successfully.") : ResponseEntity.badRequest().body("Invalid OTP.");
+        String sessionToken = userService.validateOtpAndGenerateSession(otpValidationRequest);
+        if (sessionToken == null) {
+            return ResponseEntity.badRequest().body("Invalid OTP.");
+        }
+
+        return ResponseEntity.ok().body(Map.of("sessionToken", sessionToken));
+
+
     }
 
     @PostMapping("/capture-user-details")
-    public ResponseEntity<?> captureUserDetails(@RequestBody com.seven.userse.request.UserPersonalDetailsRequest userPersonalDetailsRequest) {
-        userService.saveUserDetails(userPersonalDetailsRequest);
-        return ResponseEntity.ok("User details captured.");
+    public ResponseEntity<?> captureUserDetails(
+            @RequestHeader("Session-Token") String sessionToken,
+            @RequestBody UserPersonalDetailsRequest userDetailsRequest) {
+        try {
+            // Delegate session validation and Kafka publishing to the service
+            userService.captureUserDetails(sessionToken, userDetailsRequest);
+            return ResponseEntity.ok("User details captured and sent for processing.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to capture user details.");
+        }
     }
+
 
     @PostMapping("/upload-photos")
     public ResponseEntity<?> uploadPhotos(@RequestParam("photos") List<MultipartFile> photos) {

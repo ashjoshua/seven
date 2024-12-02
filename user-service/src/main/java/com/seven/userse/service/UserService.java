@@ -10,13 +10,13 @@ import java.util.List;
 public interface UserService {
 
 
-
+    String validateOtpAndGenerateSession(OtpValidationRequest otpValidationRequest);
 
     void generateAndSendOtp(OtpRequest otpRequest);
 
-    boolean validateOtp(OtpValidationRequest otpValidationRequest);
+    boolean validateSessionToken(String phone, String email, String sessionToken);
 
-    void saveUserDetails(UserPersonalDetailsRequest userDetailsRequest);
+    void captureUserDetails(String sessionToken, UserPersonalDetailsRequest userDetailsRequest);
 
     void saveAndValidatePhotos(List<MultipartFile> photos);
 
