@@ -9,16 +9,30 @@ import org.springframework.context.annotation.Configuration;
 public class KafkaConfig {
 
     @Value("${kafka.topic.name:user-topic}")
-    private String topicName;
+    private String userTopicName;
 
     @Value("${kafka.topic.partitions:3}")
-    private int partitions;
+    private int userPartitions;
 
     @Value("${kafka.topic.replication-factor:1}")
-    private short replicationFactor;
+    private short userReplicationFactor;
+
+    @Value("${kafka.topic.otp.name:otp-topic}")
+    private String otpTopicName;
+
+    @Value("${kafka.topic.otp.partitions:3}")
+    private int otpPartitions;
+
+    @Value("${kafka.topic.otp.replication-factor:1}")
+    private short otpReplicationFactor;
 
     @Bean
     public NewTopic userTopic() {
-        return new NewTopic(topicName, partitions, replicationFactor);
+        return new NewTopic(userTopicName, userPartitions, userReplicationFactor);
+    }
+
+    @Bean
+    public NewTopic otpTopic() {
+        return new NewTopic(otpTopicName, otpPartitions, otpReplicationFactor);
     }
 }

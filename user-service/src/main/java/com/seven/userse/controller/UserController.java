@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/capture-user-details")
-    public ResponseEntity<?> captureUserDetails(@RequestBody com.seven.userservice.request.UserPersonalDetailsRequest userPersonalDetailsRequest) {
+    public ResponseEntity<?> captureUserDetails(@RequestBody com.seven.userse.request.UserPersonalDetailsRequest userPersonalDetailsRequest) {
         userService.saveUserDetails(userPersonalDetailsRequest);
         return ResponseEntity.ok("User details captured.");
     }

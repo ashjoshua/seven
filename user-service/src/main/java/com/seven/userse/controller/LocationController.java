@@ -1,6 +1,6 @@
 package com.seven.userse.controller;
 
-import com.seven.userservice.service.GeolocationService;
+import com.seven.userse.service.GeolocationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

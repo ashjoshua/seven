@@ -1,8 +1,8 @@
-package com.seven.userservice.service.impl;
+package com.seven.userse.service.impl;
 
 import com.amazonaws.services.rekognition.AmazonRekognition;
 import com.amazonaws.services.rekognition.model.*;
-import com.seven.userservice.service.PhotoValidationService;
+import com.seven.userse.service.PhotoValidationService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

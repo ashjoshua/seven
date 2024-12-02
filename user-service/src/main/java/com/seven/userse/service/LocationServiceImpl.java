@@ -1,6 +1,6 @@
-package com.seven.userservice.service.impl;
+package com.seven.userse.service;
 
-import com.seven.userservice.service.LocationService;
+import com.seven.userse.service.LocationService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,5 +25,10 @@ public class LocationServiceImpl implements LocationService {
             userIds.add(userId);
             redisTemplate.opsForValue().set(key, userIds);
         }
+    }
+
+    @Override
+    public void storeUserLocation(Long userId, double latitude, double longitude) {
+
     }
 }

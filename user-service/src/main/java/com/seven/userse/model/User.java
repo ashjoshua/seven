@@ -1,4 +1,6 @@
-package com.seven.userservice.model;
+package com.seven.userse.model;
+
+import jakarta.persistence.Id;
 
 import javax.persistence.*;
 import java.util.List;

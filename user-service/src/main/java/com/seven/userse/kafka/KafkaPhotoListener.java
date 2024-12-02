@@ -1,6 +1,6 @@
 package com.seven.userservice.listener;
 
-import com.seven.userservice.service.PhotoValidationService;
+import com.seven.userse.service.PhotoValidationService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 

@@ -2,7 +2,7 @@ package com.seven.userse.service;
 
 import com.seven.userse.request.*;
 
-import com.seven.userservice.request.UserPersonalDetailsRequest;
+import com.seven.userse.request.UserPersonalDetailsRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

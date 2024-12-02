@@ -1,4 +1,4 @@
-package com.seven.userse.service.impl;
+package com.seven.userse.service;
 
 import com.seven.userse.model.User;
 import com.seven.userse.repository.UserRepository;

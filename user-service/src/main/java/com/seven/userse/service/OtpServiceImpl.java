@@ -4,6 +4,9 @@ import com.seven.userse.request.OtpRequest;
 import com.seven.userse.request.OtpValidationRequest;
 import com.seven.userse.service.RedisService;
 import com.seven.userse.service.OtpService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -12,10 +15,16 @@ import java.util.concurrent.TimeUnit;
 public class OtpServiceImpl implements OtpService {
 
     private final RedisService redisService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    @Value("${kafka.topic.otp.name}")
+    private String otpTopic;
 
-    public OtpServiceImpl(RedisService redisService) {
+    @Autowired
+    public OtpServiceImpl(RedisService redisService, KafkaTemplate<String, String> kafkaTemplate) {
         this.redisService = redisService;
+        this.kafkaTemplate = kafkaTemplate;
     }
+
 
     @Override
     public void generateAndSendOtp(OtpRequest otpRequest) {
@@ -24,12 +33,22 @@ public class OtpServiceImpl implements OtpService {
         String emailOtp = generateNumericOtp();
 
         // Save the OTPs in Redis with expiration time of 60 seconds
+        // Store OTPs in Redis with 5-minute TTL
         String key = "otp:" + otpRequest.getPhoneNumber() + ":" + otpRequest.getEmail();
-        redisService.saveUserContact(key, phoneOtp + ":" + emailOtp, TimeUnit.SECONDS.toSeconds(60));  // 60 seconds TTL
+        redisService.saveUserContact(key, phoneOtp + ":" + emailOtp, TimeUnit.MINUTES.toSeconds(5));  // 5-minute TTL
+
+
 
         // Send OTP via SMS and Email
-        sendSms(otpRequest.getPhoneNumber(), phoneOtp);
-        sendEmail(otpRequest.getEmail(), emailOtp);
+        // Push to Kafka topic
+        // Publish OTP details to Kafka
+        // Create the message key and value
+        String messageKey = otpRequest.getPhoneNumber(); // Message Key
+        String messageValue = String.format("{\"phone\":\"%s\",\"email\":\"%s\",\"phoneOtp\":\"%s\",\"emailOtp\":\"%s\"}",
+                otpRequest.getPhoneNumber(), otpRequest.getEmail(), phoneOtp, emailOtp);
+
+        // Publish to Kafka with key and value
+        kafkaTemplate.send(otpTopic, messageKey, messageValue);
     }
 
     private String generateNumericOtp() {
